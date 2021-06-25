@@ -1,7 +1,9 @@
 const SET_USERS = "SET_USERS"
+const SET_FETCH_ERROR = "SET_FETCH_ERROR"
 
 const defaultState = {
     items: [],
+    isFetchError: false
 }
 
 export default function usersReducer(state = defaultState, action){
@@ -10,6 +12,11 @@ export default function usersReducer(state = defaultState, action){
             return {
                 ...state,
                 items: action.payload.items,
+            }
+        case SET_FETCH_ERROR:
+            return {
+                ...state,
+                isFetchError: action.payload
             }
         default:
             return state
@@ -23,6 +30,4 @@ export const setUsers = (users) => (
     }
 )
 
-export const setCurrentPage = () => {
-
-}
+export const setIsFetchError = (bool) => ({type: SET_FETCH_ERROR, payload:bool})

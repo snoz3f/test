@@ -7,6 +7,7 @@ import {
 import {useDispatch, useSelector} from "react-redux";
 import {getUsers} from "../actions/users";
 import {DataGrid} from "@material-ui/data-grid";
+import {Alert} from "@material-ui/lab";
 
 const useStyles = makeStyles(theme => ({
     container: {
@@ -63,12 +64,14 @@ const UsersTable = () => {
     const [login, setlogin] = useState("")
     const dispatch = useDispatch()
     const users = useSelector(state => state.users.items)
-    const rows = users.map(user => ({
+    const isFetchError = useSelector(state => state.users.isFetchError)
+    let rows = users.map(user => ({
         id: user.id,
         avatar_url: user.avatar_url,
         login: user.login,
         type: user.type
     }))
+
     function searchHandler() {
         dispatch(getUsers(login))
     }
@@ -89,11 +92,15 @@ const UsersTable = () => {
                            value={login}
                            onChange={e => setlogin(e.target.value)}
                 />
+                {isFetchError &&
+                <Alert severity="error">An error has occurred</Alert>
+                }
+                {!isFetchError &&
                 <DataGrid className={classes.table}
                     columns={columns}
                     rows={rows}
                     pageSize={9}
-                />
+                />}
 
             </Paper>
         </Grid>
