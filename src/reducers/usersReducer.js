@@ -3,9 +3,6 @@ const SET_CURRENT_PAGE = "SET_CURRENT_PAGE"
 
 const defaultState = {
     items: [],
-    currentPage: 1,
-    PerPage: 9,
-    totalCount: 0
 }
 
 export default function usersReducer(state = defaultState, action){
