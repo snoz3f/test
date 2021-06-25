@@ -1,10 +1,10 @@
 import React, {useState} from 'react';
+import {useDispatch, useSelector} from "react-redux";
 import {
     Button,
     Grid, InputBase,
     makeStyles, Paper,
 } from "@material-ui/core";
-import {useDispatch, useSelector} from "react-redux";
 import {getUsers} from "../actions/users";
 import {DataGrid} from "@material-ui/data-grid";
 import {Alert} from "@material-ui/lab";
@@ -57,13 +57,12 @@ const columns = [
     }
 ];
 
-
-
-
 const UsersTable = () => {
     const [login, setlogin] = useState("")
     const dispatch = useDispatch()
     const users = useSelector(state => state.users.items)
+    const totalCount = useSelector(state => state.users.total_count)
+    const isLoading = useSelector(state => state.users.isLoading)
     const isFetchError = useSelector(state => state.users.isFetchError)
     let rows = users.map(user => ({
         id: user.id,
@@ -73,7 +72,15 @@ const UsersTable = () => {
     }))
 
     function searchHandler() {
-        dispatch(getUsers(login))
+        dispatch(getUsers(login, 1))
+    }
+
+    function onLoginChange(e) {
+        setlogin(e.target.value)
+    }
+
+    function handlePageChange(params) {
+        dispatch(getUsers(login, params.page + 1))
     }
 
     const classes = useStyles()
@@ -83,25 +90,30 @@ const UsersTable = () => {
                 <Button
                     className={classes.btn}
                     variant="outlined"
-                    onClick={() => searchHandler()}
+                    onClick={searchHandler}
                     color="primary">
                     Search
                 </Button>
-                <InputBase className={classes.input}
-                           placeholder="LOGIN…"
-                           value={login}
-                           onChange={e => setlogin(e.target.value)}
+                <InputBase
+                    className={classes.input}
+                    placeholder="LOGIN…"
+                    value={login}
+                    onChange={onLoginChange}
                 />
                 {isFetchError &&
                 <Alert severity="error">An error has occurred</Alert>
                 }
                 {!isFetchError &&
-                <DataGrid className={classes.table}
+                <DataGrid
+                    rowCount={totalCount}
+                    className={classes.table}
                     columns={columns}
                     rows={rows}
                     pageSize={9}
+                    paginationMode="server"
+                    onPageChange={handlePageChange}
+                    loading={isLoading}
                 />}
-
             </Paper>
         </Grid>
     );
